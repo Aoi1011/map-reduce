@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "map-reduce"
+name = "mrapps"
 version = "0.1.0"

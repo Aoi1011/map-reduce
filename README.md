@@ -1,10 +1,12 @@
-# Map Reduce
+# Distributed Systems
 
-## Abstract
+## Map Reduce
+
+### Abstract
 - for processing and generating large data sets
 - parallelized and executed on a large cluster of commodity machines
 
-## Programming model
+### Programming model
 2 main functions
 
 1. Map
@@ -29,10 +31,10 @@ reduce(String key, Iterator values):
  Emit(AsString(result));
 ```
 
-## Implementation
+### Implementation
 
 
-## REFERENCES
+### REFERENCES
 - [MapReduce: Simplified Data Processing on Large Clusters](http://nil.csail.mit.edu/6.824/2020/papers/mapreduce.pdf)
 - [6.824 Lab 1: MapReduce](http://nil.csail.mit.edu/6.824/2020/labs/lab-mr.html)
 - [MapReduce - Computerphile](https://www.youtube.com/watch?v=cQP8WApzIQQ)
