@@ -56,7 +56,7 @@ impl Worker {
     }
 
     fn map_result_names(&self, job_id: &i32, length: usize) -> Vec<PathBuf> {
-        (1..length)
+        (1..=length)
             .map(|i| {
                 let mut path = self.working_directory.clone();
                 path.push(format!("map.{}.reduce.{}", job_id, i));
@@ -91,15 +91,18 @@ fn open_file(path: PathBuf) -> BufReader<File> {
 
 #[cfg(test)]
 mod tests {
-    use std::thread;
+    use std::{fs::remove_file, io::BufRead, thread};
 
     use super::*;
 
-    fn map_fn(input: BufReader<File>) -> Vec<String> {
-        vec!["1", "2", "3", "4"].iter().map(|s| s.to_string()).collect()
+    fn map_fn(_input: BufReader<File>) -> Vec<String> {
+        vec!["1", "2", "3", "4"]
+            .iter()
+            .map(|s| s.to_string())
+            .collect()
     }
 
-    fn reduce_fn(input: Vec<BufReader<File>>) -> String {
+    fn reduce_fn(_input: Vec<BufReader<File>>) -> String {
         "1234".to_string()
     }
 
@@ -120,9 +123,7 @@ mod tests {
             results_queue: results_send,
         };
 
-        thread::spawn(move || {
-            worker.run()
-        });
+        thread::spawn(move || worker.run());
 
         work_send.send(Job::Map((1, map_file.clone())));
         let done = results_recv.recv();
@@ -130,5 +131,36 @@ mod tests {
         drop(results_recv);
 
         assert_eq!(done, Some(JobResult::MapFinished(1)));
+        let expected_files = vec![
+            "map.1.reduce.1",
+            "map.1.reduce.2",
+            "map.1.reduce.3",
+            "map.1.reduce.4",
+        ];
+
+        let contents = expected_files
+            .iter()
+            .flat_map(|name| {
+                let mut path = working_directry.clone();
+                path.push(name);
+                let contents;
+                {
+                    let f = OpenOptions::new().read(true).open(&path).unwrap();
+                    contents = BufReader::new(f)
+                        .lines()
+                        .map(|l| l.unwrap_or("".to_string()))
+                        .collect::<Vec<String>>()
+                }
+                contents
+            })
+            .collect::<Vec<String>>();
+        assert_eq!(contents, vec!["1", "2", "3", "4"]);
+
+        for name in expected_files {
+            let mut path = working_directry.clone();
+            path.push(name);
+            let _ = remove_file(path);
+        }
     }
+
 }
