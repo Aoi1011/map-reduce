@@ -163,4 +163,49 @@ mod tests {
         }
     }
 
+    #[test]
+    fn worker_reduces_input_to_result_file() {
+        let working_directory = PathBuf::from("./test-data/worker_reduces_input_to_test_file");
+        let reduce_files = (1..=4)
+            .map(|i| {
+                let mut path = working_directory.clone();
+                path.push(format!("map.{}.reduce.2", i));
+                path
+            })
+            .collect::<Vec<PathBuf>>();
+
+        let (work_send, work_recv) = chan::r#async();
+        let (results_send, results_recv) = chan::r#async();
+
+        let worker = Worker {
+            working_directory: working_directory.clone(),
+            map: Arc::new(map_fn),
+            reduece: Arc::new(reduce_fn),
+            job_queue: work_recv,
+            results_queue: results_send,
+        };
+
+        thread::spawn(move || worker.run());
+
+        work_send.send(Job::Reduce((2, reduce_files)));
+        let done = results_recv.recv();
+        drop(work_send);
+        drop(results_recv);
+
+        assert_eq!(done, Some(JobResult::ReduceFinished(2)));
+
+        let mut reduce_file = working_directory.clone();
+        reduce_file.push("reduce.2.result");
+        {
+            let f = OpenOptions::new().read(true).open(&reduce_file).unwrap();
+            let contents = BufReader::new(f)
+                .lines()
+                .map(|l| l.unwrap_or("".to_string()))
+                .collect::<Vec<String>>();
+
+            assert_eq!(contents, vec!["1234".to_string()]);
+        }
+
+        let _ = remove_file(reduce_file);
+    }
 }
