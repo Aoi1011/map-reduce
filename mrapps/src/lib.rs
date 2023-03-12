@@ -1,14 +1,20 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+pub mod mr;
+pub mod wc;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use std::env;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+use mr::*;
+use wc::*;
+
+pub fn mrsequential() {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() < 4 {
+        println!("Usage: mrsequential xxx.so inputfiles...");
+        return;
     }
+
+
 }
+
+pub fn load_plugin(filename: String) {}
