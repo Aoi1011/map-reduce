@@ -69,7 +69,7 @@ impl Master {
                                 .ok_or(entry.file_name())
                         })
                         .map(|key| {
-                            let mut files = grouped.entry(key).or_insert(vec![]);
+                            let files = grouped.entry(key).or_insert(vec![]);
                             files.push(entry.path())
                         });
                     grouped
@@ -146,6 +146,11 @@ impl Master {
 
 #[cfg(test)]
 mod tests {
+    use std::{
+        fs::{remove_file, OpenOptions},
+        io::BufRead, hash::Hash, collections::HashSet,
+    };
+
     use super::*;
 
     fn map_fn(_input: BufReader<File>) -> Vec<String> {
@@ -190,5 +195,72 @@ mod tests {
 
         assert_eq!(n_map_jobs, 4);
         assert_eq!(map_jobs.join().unwrap(), expected_jobs);
+    }
+
+    fn vec_eq<T>(a: &[T], b: &[T]) -> bool where T: Eq + Hash{
+        let a: HashSet<_> = a.iter().collect();
+        let b: HashSet<_> = b.iter().collect();
+
+        a == b
+    }
+
+    #[test]
+    fn run_map_reduce() {
+        let working_directory = PathBuf::from("./test-data/master_runs_map_reduce");
+        let input_files = vec!["input_1", "input_2", "input_3", "input_4"]
+            .into_iter()
+            .map(|filename| {
+                let mut path = working_directory.clone();
+                path.push(filename);
+                path
+            })
+            .collect::<Vec<PathBuf>>();
+        let master = Master::new(
+            working_directory.clone(),
+            input_files.clone(),
+            Arc::new(map_fn),
+            Arc::new(reduce_fn),
+        );
+
+        let result_files = master.run(2);
+
+        let expected_files = vec![
+            "reduce.1.result",
+            "reduce.2.result",
+            "reduce.3.result",
+            "reduce.4.result",
+        ]
+        .into_iter()
+        .map(|filename| {
+            let mut path = working_directory.clone();
+            path.push(filename);
+            path
+        })
+        .collect::<Vec<PathBuf>>();
+
+        assert!(vec_eq(&result_files, &expected_files));
+
+        let expected_result = vec!["1234".to_string()];
+
+        for path in expected_files {
+            let f = OpenOptions::new().read(true).open(&path).unwrap();
+            let contents = BufReader::new(f)
+                .lines()
+                .map(|l| l.unwrap_or("".to_string()))
+                .collect::<Vec<String>>();
+
+            assert_eq!(contents, expected_result);
+        }
+
+        for i in 1..(4 + 1) {
+            for j in 1..(4 + 1) {
+                let mut map_file = working_directory.clone();
+                map_file.push(format!("map.{}.reduce.{}", i, j));
+                let _ = remove_file(map_file);
+            }
+            let mut result_file = working_directory.clone();
+            result_file.push(format!("reduce.{}.result", i));
+            let _ = remove_file(result_file);
+        }
     }
 }
