@@ -143,3 +143,8 @@ impl Master {
             .unwrap_or(vec![])
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+}
