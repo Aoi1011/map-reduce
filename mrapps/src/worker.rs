@@ -12,6 +12,7 @@ pub struct KeyValue {
     pub value: String,
 }
 
+#[derive(Debug, PartialEq)]
 pub enum Job {
     Map((i32, PathBuf)),
     Reduce((i32, Vec<PathBuf>)),

@@ -147,4 +147,48 @@ impl Master {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn map_fn(_input: BufReader<File>) -> Vec<String> {
+        vec!["1", "2", "3", "4"]
+            .iter()
+            .map(|s| s.to_string())
+            .collect()
+    }
+
+    fn reduce_fn(_input: Vec<BufReader<File>>) -> String {
+        "1234".to_string()
+    }
+
+    #[test]
+    fn master_enqueues_map_jobs() {
+        let working_directory = PathBuf::from("./test-data/master_enqueues_map_jobs");
+        let input_files = vec!["input_1", "input_2", "input_3", "input_4"]
+            .into_iter()
+            .map(|filename| {
+                let mut path = working_directory.clone();
+                path.push(filename);
+                path
+            })
+            .collect::<Vec<PathBuf>>();
+        let master = Master::new(
+            working_directory.clone(),
+            input_files.clone(),
+            Arc::new(map_fn),
+            Arc::new(reduce_fn),
+        );
+        let job_recv = master.worker_job_queue.clone();
+        let map_jobs = thread::spawn(move || job_recv.iter().collect::<Vec<Job>>());
+
+        let n_map_jobs = master.do_map();
+        drop(master);
+
+        let expected_jobs = input_files
+            .iter()
+            .enumerate()
+            .map(|(i, f)| Job::Map(((i + 1) as i32, f.clone())))
+            .collect::<Vec<Job>>();
+
+        assert_eq!(n_map_jobs, 4);
+        assert_eq!(map_jobs.join().unwrap(), expected_jobs);
+    }
 }
