@@ -26,7 +26,7 @@ pub enum JobResult {
 pub struct Worker {
     pub working_directory: PathBuf,
     pub map: Arc<dyn Fn(BufReader<File>) -> Vec<String> + Send + Sync>,
-    pub reduece: Arc<dyn Fn(Vec<BufReader<File>>) -> String + Send + Sync>,
+    pub reduce: Arc<dyn Fn(Vec<BufReader<File>>) -> String + Send + Sync>,
     pub job_queue: Receiver<Job>,
     pub results_queue: Sender<JobResult>,
 }
@@ -46,7 +46,7 @@ impl Worker {
                         .into_iter()
                         .map(|path| open_file(path))
                         .collect::<Vec<BufReader<File>>>();
-                    let result = (self.reduece)(files);
+                    let result = (self.reduce)(files);
                     let name = self.reduce_result_name(&job_id);
                     self.write_reduce_results(name, result);
                     self.results_queue.send(JobResult::ReduceFinished(job_id));
@@ -118,7 +118,7 @@ mod tests {
         let worker = Worker {
             working_directory: working_directry.clone(),
             map: Arc::new(map_fn),
-            reduece: Arc::new(reduce_fn),
+            reduce: Arc::new(reduce_fn),
             job_queue: work_recv,
             results_queue: results_send,
         };
@@ -180,7 +180,7 @@ mod tests {
         let worker = Worker {
             working_directory: working_directory.clone(),
             map: Arc::new(map_fn),
-            reduece: Arc::new(reduce_fn),
+            reduce: Arc::new(reduce_fn),
             job_queue: work_recv,
             results_queue: results_send,
         };
