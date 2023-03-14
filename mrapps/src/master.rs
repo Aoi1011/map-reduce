@@ -147,8 +147,10 @@ impl Master {
 #[cfg(test)]
 mod tests {
     use std::{
+        collections::HashSet,
         fs::{remove_file, OpenOptions},
-        io::BufRead, hash::Hash, collections::HashSet,
+        hash::Hash,
+        io::BufRead,
     };
 
     use super::*;
@@ -197,7 +199,10 @@ mod tests {
         assert_eq!(map_jobs.join().unwrap(), expected_jobs);
     }
 
-    fn vec_eq<T>(a: &[T], b: &[T]) -> bool where T: Eq + Hash{
+    fn vec_eq<T>(a: &[T], b: &[T]) -> bool
+    where
+        T: Eq + Hash,
+    {
         let a: HashSet<_> = a.iter().collect();
         let b: HashSet<_> = b.iter().collect();
 
