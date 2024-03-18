@@ -1,4 +1,7 @@
 [workspace]
-members = [
+members = [ 
+	"assembly-dereference",
 	"mrapps",
 ]
+resolver = "2"
+
