@@ -1,0 +1,19 @@
+[package]
+name = "examples"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+# If you copy one of the examples into a new project, you should be using
+# [dependencies] instead, and delete the **path**.
+[dev-dependencies]
+actix-web = "4.3.1"
+epoll = { path = "../epoll" }
+
+[[example]]
+name = "delayserver"
+path = "delayserver.rs"
+
+[[example]]
+name = "epoll"
+path = "epoll.rs"
