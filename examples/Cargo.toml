@@ -9,6 +9,7 @@ edition = "2021"
 [dev-dependencies]
 actix-web = "4.3.1"
 epoll = { path = "../epoll" }
+mio = { version = "0.8.8", features = ["net", "os-poll"] }
 
 [[example]]
 name = "delayserver"
@@ -17,3 +18,7 @@ path = "delayserver.rs"
 [[example]]
 name = "epoll"
 path = "epoll.rs"
+
+[[example]]
+name = "epoll-mio"
+path = "epoll-mio.rs"
