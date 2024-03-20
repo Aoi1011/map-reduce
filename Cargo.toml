@@ -1,7 +1,7 @@
 [workspace]
 members = [ 
 	"assembly-dereference",
-	"mrapps", "os-threds",
+	"mrapps", "os-threds", "raw-syscall",
 ]
 resolver = "2"
 
