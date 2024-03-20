@@ -32,6 +32,7 @@ fn main() -> io::Result<()> {
     while handled_events < n_events {
         let mut events = Vec::with_capacity(10);
         poll.poll(&mut events, None)?;
+
         if events.is_empty() {
             println!("TIMEOUT (OR SPURIOUS EVENT NOTIFICATION)");
             continue;

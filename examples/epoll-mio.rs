@@ -1,6 +1,7 @@
 use std::{
     collections::HashSet,
-    io::{self, Write, Read},
+    fs,
+    io::{self, Read, Write},
 };
 
 use mio::{event::Event, Interest, Poll, Token};
@@ -13,7 +14,7 @@ fn main() -> io::Result<()> {
     let addr = "localhost:8080";
 
     for i in 0..n_events {
-        let delay = (n_events - i) * 1000;
+        let delay = n_events * 10000;
         let url_path = format!("/{delay}/request-{i}");
         let request = get_req(&url_path);
         let std_stream = std::net::TcpStream::connect(addr)?;
@@ -32,9 +33,18 @@ fn main() -> io::Result<()> {
     let mut handled_ids = HashSet::new();
 
     let mut handled_events = 0;
+    let mut count = 0;
     while handled_events < n_events {
+        count += 1;
+        if let Some(num_threads) = num_threads() {
+            println!("Num threads: {num_threads}");
+        }
+
         let mut events = mio::Events::with_capacity(10);
+        println!("Blocking the current thread");
         poll.poll(&mut events, None)?;
+
+        println!("Hello from polling");
 
         if events.is_empty() {
             println!("TIMEOUT (OR SPURIOUS EVENT NOTIFICATION)");
@@ -42,13 +52,26 @@ fn main() -> io::Result<()> {
         }
 
         let events: Vec<Event> = events.into_iter().map(|e| e.clone()).collect();
+        println!("Events count: {}", events.len());
 
         handled_events += handle_events(&events, &mut streams, &mut handled_ids)?;
     }
 
+    println!("Count: {count}");
     println!("FINISHED");
 
     Ok(())
+}
+
+fn num_threads() -> Option<usize> {
+    fs::read_to_string("/proc/self/stat")
+        .ok()
+        .as_ref()
+        // Skip past the pid and (process name) fields
+        .and_then(|stat| stat.rsplit(')').next())
+        // 20th field, less the two we skipped
+        .and_then(|rstat| rstat.split_whitespace().nth(17))
+        .and_then(|num_threads| num_threads.parse::<usize>().ok())
 }
 
 fn handle_events(
@@ -58,6 +81,7 @@ fn handle_events(
 ) -> io::Result<usize> {
     let mut handled_events = 0;
     for event in events {
+        println!("RECEIVED: {:?}", event);
         let index: usize = event.token().into();
 
         let mut data = vec![0u8; 4096];
@@ -72,7 +96,7 @@ fn handle_events(
                 }
                 Ok(n) => {
                     let txt = String::from_utf8_lossy(&data[..n]);
-                    println!("RECEIVED: {:?}", event);
+                    // println!("RECEIVED: {:?}", event);
                     println!("{txt}\n------\n");
                 }
                 Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,

@@ -39,6 +39,11 @@ reduce(String key, Iterator values):
 
 
 ### REFERENCES
+
+#### Async
+- [How epoll works efficiently](https://www.sobyte.net/post/2022-04/epoll-efficiently/)
+
+#### Distributed Systems
 - [MapReduce: Simplified Data Processing on Large Clusters](http://nil.csail.mit.edu/6.824/2020/papers/mapreduce.pdf)
 - [6.824 Lab 1: MapReduce](http://nil.csail.mit.edu/6.824/2020/labs/lab-mr.html)
 - [MapReduce - Computerphile](https://www.youtube.com/watch?v=cQP8WApzIQQ)
