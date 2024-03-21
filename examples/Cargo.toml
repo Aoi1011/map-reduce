@@ -20,5 +20,17 @@ name = "epoll"
 path = "epoll.rs"
 
 [[example]]
-name = "epoll-mio"
-path = "epoll-mio.rs"
+name = "epoll_mio"
+path = "epoll_mio.rs"
+
+[[example]]
+name = "stack_swap"
+path = "stack_swap.rs"
+
+[[example]]
+name = "show_stack"
+path = "show_stack.rs"
+
+[[example]]
+name = "fibers"
+path = "fibers.rs"
