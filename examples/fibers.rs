@@ -63,8 +63,11 @@ impl Runtime {
         if self.threads[self.current].state != State::Available {
             self.threads[self.current].state = State::Ready;
         }
+
         self.threads[pos].state = State::Running;
         let old_pos = self.current;
+        self.current = pos;
+
         unsafe {
             let old: *mut ThreadContext = &mut self.threads[old_pos].ctx;
             let new: *const ThreadContext = &self.threads[pos].ctx;
