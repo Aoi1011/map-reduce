@@ -43,6 +43,7 @@ reduce(String key, Iterator values):
 
 #### Async
 - [How epoll works efficiently](https://www.sobyte.net/post/2022-04/epoll-efficiently/)
+- [Let’s write async rust from the ground up!](https://www.youtube.com/watch?v=7pU3gOVAeVQ&t=6s)
 
 #### Distributed Systems
 - [MapReduce: Simplified Data Processing on Large Clusters](http://nil.csail.mit.edu/6.824/2020/papers/mapreduce.pdf)
