@@ -80,7 +80,13 @@ impl Runtime {
     }
 
     pub fn run(&mut self) -> ! {
+        println!("Before Running...");
+        self.print_state();
+
         while self.t_yield() {}
+
+        println!("After Running...");
+        self.print_state();
         std::process::exit(0);
     }
 
@@ -141,6 +147,16 @@ impl Runtime {
             available.state = State::Ready;
         }
     }
+
+    fn print_state(&self) {
+        println!("-------------------------");
+        println!("Current State");
+        println!("Thread 0: {:?}", self.threads[0].state);
+        println!("Thread 1: {:?}", self.threads[1].state);
+        println!("Thread 2: {:?}", self.threads[2].state);
+        println!("Thread 3: {:?}", self.threads[3].state);
+        println!("-------------------------");
+    }
 }
 
 fn call(thread: u64) {
@@ -198,13 +214,29 @@ unsafe fn switch() {
 fn main() {
     let mut runtime = Runtime::new();
     runtime.init();
+
+    println!("Initialize...");
+    runtime.print_state();
+
     Runtime::spawn(|| {
-        println!("Hello from thread 1");
-        yield_thread();
+        let id = 1;
+        println!("Hello from thread {id}");
+        for i in 0..1000 {
+            println!("thread: {} counter: {}", id, i);
+            yield_thread();
+        }
     });
+    println!("Spawn 1...");
+    runtime.print_state();
     Runtime::spawn(|| {
-        println!("Hello from thread 2");
-        yield_thread();
+        let id = 2;
+        println!("Hello from thread {id}");
+        for i in 0..5 {
+            println!("thread: {} counter: {}", id, i);
+            yield_thread();
+        }
     });
+    println!("Spawn 2...");
+    runtime.print_state();
     runtime.run();
 }
