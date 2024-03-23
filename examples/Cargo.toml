@@ -34,3 +34,7 @@ path = "show_stack.rs"
 [[example]]
 name = "fibers"
 path = "fibers.rs"
+
+[[example]]
+name = "fibers_closure"
+path = "fibers_closure.rs"
