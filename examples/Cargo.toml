@@ -11,6 +11,7 @@ actix-web = "4.3.1"
 coroutine = { path = "../coroutine" }
 epoll = { path = "../epoll" }
 mio = { version = "0.8.8", features = ["net", "os-poll"] }
+runtime = { path = "../runtime" }
 
 [[example]]
 name = "delayserver"
@@ -43,3 +44,7 @@ path = "fibers_closure.rs"
 [[example]]
 name = "coroutine"
 path = "coroutine.rs"
+
+[[example]]
+name = "runtime"
+path = "runtime.rs"

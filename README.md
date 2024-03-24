@@ -47,6 +47,20 @@ What Rust language and standard library take care of
 - An ergonomic way of creating tasks (stackless coroutines to be precise) that can be suspended and resumed through the async and await keywords
 - A defined interface to wake up a suspended task through the Waker type
 
+## Runtime, Wakers, and the Reactor-Executor Pattern
+
+Most runtimes such as Tokio, Smol  will divide their runtime into two parts.
+
+**Reactor or Driver**
+The part that tracks events we're waiting on and makes 
+
+**Executor**
+Schedule tasks and polls them to completion
+
+[Waker](https://doc.rust-lang.org/std/task/struct.Waker.html)
+[Future](https://doc.rust-lang.org/std/future/trait.Future.html)
+
+
 ## Map Reduce
 
 ### Abstract
