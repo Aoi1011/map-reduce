@@ -48,3 +48,7 @@ path = "coroutine.rs"
 [[example]]
 name = "runtime"
 path = "runtime.rs"
+
+[[example]]
+name = "runtime1"
+path = "runtime1.rs"
