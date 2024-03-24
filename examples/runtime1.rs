@@ -61,7 +61,7 @@ impl HttpGetFuture {
 
         let mut stream = mio::net::TcpStream::from_std(stream);
 
-        stream.write_all(self.path.as_bytes()).unwrap();
+        stream.write_all(get_req(&self.path).as_bytes()).unwrap();
 
         self.stream = Some(stream);
     }
@@ -168,12 +168,12 @@ impl Future for Coroutine {
                 State::Wait2(ref mut fut2) => match fut2.poll() {
                     PollState::Ready(txt) => {
                         println!("{txt}");
-                        let fut2 = Box::new(Http::get("/8000/HelloWorld8"));
-                        self.state = State::Wait2(fut2);
+                        self.state = State::Resolved;
+                        break PollState::Ready(String::new());
                     }
                     PollState::NotReady => break PollState::NotReady,
-                }
-                State::Resolved => panic!("")
+                },
+                State::Resolved => panic!(""),
             }
         }
     }
