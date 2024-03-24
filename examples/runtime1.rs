@@ -80,7 +80,9 @@ impl Future for HttpGetFuture {
         }
 
         let mut buf = vec![0u8; 4096];
+        let mut count = 0;
         loop {
+            println!("Count: {count}");
             match self.stream.as_mut().unwrap().read(&mut buf) {
                 Ok(0) => {
                     let txt = String::from_utf8_lossy(&self.buffer);
@@ -88,10 +90,17 @@ impl Future for HttpGetFuture {
                 }
                 Ok(n) => {
                     self.buffer.extend(&buf[0..n]);
+                    count += 1;
                     continue;
                 }
-                Err(e) if e.kind() == ErrorKind::WouldBlock => break PollState::NotReady,
-                Err(e) if e.kind() == ErrorKind::Interrupted => continue,
+                Err(e) if e.kind() == ErrorKind::WouldBlock => {
+                    println!("Would block");
+                    break PollState::NotReady;
+                }
+                Err(e) if e.kind() == ErrorKind::Interrupted => {
+                    count += 1;
+                    continue;
+                }
                 Err(e) => panic!("{e:?}"),
             }
         }
@@ -121,6 +130,9 @@ impl Runtime {
                 PollState::NotReady => {
                     let mut events = Events::with_capacity(100);
                     self.poll.poll(&mut events, None).unwrap();
+                    for event in events.iter() {
+                        println!("Got event: {:?}", event.token());
+                    }
                 }
                 PollState::Ready(_) => break,
             }
@@ -154,13 +166,13 @@ impl Future for Coroutine {
         loop {
             match self.state {
                 State::Start => {
-                    let fut = Box::new(Http::get("/4000/HelloWorld4"));
+                    let fut = Box::new(Http::get("/8000/HelloWorld8"));
                     self.state = State::Wait1(fut);
                 }
                 State::Wait1(ref mut fut1) => match fut1.poll() {
                     PollState::Ready(txt) => {
                         println!("{txt}");
-                        let fut2 = Box::new(Http::get("/8000/HelloWorld8"));
+                        let fut2 = Box::new(Http::get("/4000/HelloWorld4"));
                         self.state = State::Wait2(fut2);
                     }
                     PollState::NotReady => break PollState::NotReady,

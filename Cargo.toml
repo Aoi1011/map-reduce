@@ -6,7 +6,9 @@ members = [
 	"examples",
 	"mrapps",
 	"os-threds",
-	"raw-syscall", "runtime",
+	"raw-syscall",
+	"runtime",
+	"runtime-executor",
 ]
 resolver = "2"
 
