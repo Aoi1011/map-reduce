@@ -13,6 +13,40 @@ Ex: X86-64k x86, ARM ISA
 
 CPUs implement and instruction set. 
 
+## Futures
+
+Fibers/green threads are an example of stackful corountines.
+The other way of modeling asynchronous program flow is by susing what we call stackless corountines, and combining Rust's futures with async/await
+
+### What is a future?
+
+A future is a representaion of some operation that will be asynchronous task will have three phase. 
+
+1. **The poll phase**
+A future is polled, which results in the task progressing until a point where it can no longer make progress.
+We often refer to the part of the runtime that polls a future as an executor
+
+
+2. **The wait phase**
+An event source, most often referred to as a reactor, registers that a future is waiting for an event to happen and makes sure that it will wake the future when that event is ready.
+
+
+3. **The wake phase**
+The event happens and the future is woken up. It's now up to the executor that polled the future in step 1 to schedule the future to be polled again and make further progress until it completes or reaches a new point where it can't make further progress and the cycle repeats.
+
+A fully working async system in Rust can be divided into three parts:
+
+- Reactor (responsible for notifying about I/O events)
+- Executor (scheduler)
+- Future (a task that can stop and resume at specific points)
+
+
+What Rust language and standard library take care of
+
+- A common interface that represents an operation, which will be completed in the future through the Future trait
+- An ergonomic way of creating tasks (stackless coroutines to be precise) that can be suspended and resumed through the async and await keywords
+- A defined interface to wake up a suspended task through the Waker type
+
 ## Map Reduce
 
 ### Abstract

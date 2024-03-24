@@ -8,6 +8,7 @@ edition = "2021"
 # [dependencies] instead, and delete the **path**.
 [dev-dependencies]
 actix-web = "4.3.1"
+coroutine = { path = "../coroutine" }
 epoll = { path = "../epoll" }
 mio = { version = "0.8.8", features = ["net", "os-poll"] }
 
@@ -38,3 +39,7 @@ path = "fibers.rs"
 [[example]]
 name = "fibers_closure"
 path = "fibers_closure.rs"
+
+[[example]]
+name = "coroutine"
+path = "coroutine.rs"

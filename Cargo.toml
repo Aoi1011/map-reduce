@@ -1,10 +1,11 @@
 [workspace]
 members = [ 
-	"assembly-dereference", 
+	"assembly-dereference",
+	"coroutine",
 	"epoll",
 	"examples",
-	"mrapps", 
-	"os-threds", 
+	"mrapps",
+	"os-threds",
 	"raw-syscall",
 ]
 resolver = "2"
