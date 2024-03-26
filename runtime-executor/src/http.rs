@@ -7,7 +7,7 @@ use mio::{Interest, Token};
 
 use crate::{
     future::{Future, PollState},
-    runtime::registry,
+    runtime::{registry, executor::Waker},
 };
 
 pub struct Http;
@@ -50,7 +50,7 @@ impl HttpGetFuture {
 impl Future for HttpGetFuture {
     type Output = String;
 
-    fn poll(&mut self) -> PollState<Self::Output> {
+    fn poll(&mut self, waker: &Waker) -> PollState<Self::Output> {
         if self.stream.is_none() {
             self.write_request();
 

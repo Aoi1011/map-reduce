@@ -4,6 +4,14 @@ use mio::{Events, Poll, Registry};
 
 use crate::future::{Future, PollState};
 
+pub mod executor;
+pub mod reactor;
+
+pub fn init() -> Executor {
+    reactor::start();
+    Executor::new()
+}
+
 static REGISTRY: OnceLock<Registry> = OnceLock::new();
 
 pub fn registry() -> &'static Registry {
@@ -24,19 +32,4 @@ impl Runtime {
         Runtime { poll }
     }
 
-    pub fn block_on<F>(&mut self, future: F)
-    where
-        F: Future<Output = String>,
-    {
-        let mut future = future;
-        loop {
-            match future.poll() {
-                PollState::NotReady => {
-                    let mut events = Events::with_capacity(100);
-                    self.poll.poll(&mut events, None).unwrap();
-                }
-                PollState::Ready(_) => break
-            }
-        }
-    }
 }
