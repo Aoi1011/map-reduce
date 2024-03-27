@@ -5,7 +5,7 @@ use std::{
     thread::{self, Thread},
 };
 
-use crate::future::Future;
+use crate::future::{Future, PollState};
 
 type Task = Box<dyn Future<Output = String>>;
 
@@ -76,18 +76,33 @@ impl Executor {
         CURRENT_EXEC.with(|q| q.tasks.borrow().len())
     }
 
+    /// The entry point our Executor.
     pub fn block_on<F>(&mut self, future: F)
     where
-        F: Future<Output = String>,
+        F: Future<Output = String> + 'static,
     {
-        let mut future = future;
+        spawn(future);
         loop {
-            match future.poll() {
-                PollState::NotReady => {
-                    let mut events = Events::with_capacity(100);
-                    self.poll.poll(&mut events, None).unwrap();
+            while let Some(id) = self.pop_ready() {
+                let mut future = match self.get_future(id) {
+                    Some(f) => f,
+                    None => continue,
+                };
+                let waker = self.get_waker(id);
+                match future.poll(&waker) {
+                    PollState::NotReady => self.insert_task(id, future),
+                    PollState::Ready(_) => continue,
                 }
-                PollState::Ready(_) => break
+            }
+
+            let task_count = self.task_count();
+            let name = thread::current().name().unwrap_or_default().to_string();
+            if task_count > 0 {
+                println!("{name}: {task_count} pending tasks. Sleep until notified.");
+                thread::park();
+            } else {
+                println!("{name}: All tasks are finished");
+                break;
             }
         }
     }
