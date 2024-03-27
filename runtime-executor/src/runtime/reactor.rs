@@ -32,8 +32,8 @@ pub struct Reactor {
 
 impl Reactor {
     /// Thin wrapper around `Registry::register`.
-    pub fn register(&self, stream: &mut TcpStream, interest: Interest) {
-        self.registry.register(stream, Token(0), interest).unwrap();
+    pub fn register(&self, stream: &mut TcpStream, interest: Interest, id: usize) {
+        self.registry.register(stream, Token(id), interest).unwrap();
     }
 
     /// Adds a `Waker` to our `HashMap` using the provided id property as a key to identify it.
