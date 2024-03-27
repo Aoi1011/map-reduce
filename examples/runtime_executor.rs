@@ -1,7 +1,7 @@
 use runtime_executor::{
     future::{Future, PollState},
     http::Http,
-    runtime::{Runtime, executor::Waker},
+    runtime::{executor::Waker, init},
 };
 
 enum State {
@@ -63,6 +63,6 @@ pub fn async_main() -> impl Future<Output = String> {
 fn main() {
     let future = async_main();
 
-    let mut runtime = Runtime::new();
-    runtime.block_on(future);
+    let mut executor = init();
+    executor.block_on(future);
 }

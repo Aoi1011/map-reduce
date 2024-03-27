@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
 
-use mio::{Events, Poll, Registry};
+use mio::{Poll, Registry};
 
 use self::executor::Executor;
 
@@ -31,5 +31,4 @@ impl Runtime {
 
         Runtime { poll }
     }
-
 }
