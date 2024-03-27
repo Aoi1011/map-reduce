@@ -2,7 +2,7 @@ use std::sync::OnceLock;
 
 use mio::{Events, Poll, Registry};
 
-use crate::future::{Future, PollState};
+use self::executor::Executor;
 
 pub mod executor;
 pub mod reactor;
