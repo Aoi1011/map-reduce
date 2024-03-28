@@ -2,6 +2,7 @@
 members = [ 
 	"assembly-dereference",
 	"coroutine",
+	"coroutines-variables",
 	"epoll",
 	"examples",
 	"mrapps",
