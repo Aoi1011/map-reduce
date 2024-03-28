@@ -95,6 +95,7 @@ impl Executor {
     }
 }
 
+#[derive(Clone)]
 pub struct Waker {
     thread: Thread,
     id: usize,

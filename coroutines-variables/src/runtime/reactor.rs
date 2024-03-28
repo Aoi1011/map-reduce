@@ -5,6 +5,7 @@ use std::{
         atomic::{AtomicUsize, Ordering},
         Arc, Mutex, OnceLock,
     },
+    thread::spawn,
 };
 
 use mio::{net::TcpStream, Events, Interest, Poll, Registry, Token};
@@ -45,9 +46,9 @@ impl Reactor {
         self.registry.register(stream, Token(id), interest)
     }
 
-    pub fn set_waker(&self, waker: Waker, id: usize) -> Option<Waker> {
+    pub fn set_waker(&self, waker: &Waker, id: usize) -> Option<Waker> {
         let mut wakers = self.wakers.lock().unwrap();
-        wakers.insert(id, waker)
+        wakers.insert(id, waker.clone())
     }
 
     pub fn deregister(&self, stream: &mut TcpStream, id: usize) -> io::Result<()> {
@@ -55,7 +56,7 @@ impl Reactor {
         self.registry.deregister(stream)
     }
 
-    pub fn next_id(&mut self) -> usize {
+    pub fn next_id(&self) -> usize {
         self.next_id.fetch_add(1, Ordering::Relaxed)
     }
 }
@@ -82,4 +83,5 @@ pub fn start() {
     let reactor = Reactor::new(wakers.clone(), registry);
 
     REACTOR.set(reactor).ok();
+    spawn(move || event_loop(poll, wakers));
 }
