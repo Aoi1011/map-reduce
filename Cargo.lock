@@ -371,6 +371,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "coroutines-pin"
+version = "0.1.0"
+dependencies = [
+ "mio",
+]
+
+[[package]]
 name = "coroutines-variables"
 version = "0.1.0"
 dependencies = [
@@ -462,6 +469,7 @@ version = "0.0.0"
 dependencies = [
  "actix-web",
  "coroutine",
+ "coroutines-pin",
  "coroutines-variables",
  "epoll",
  "mio",

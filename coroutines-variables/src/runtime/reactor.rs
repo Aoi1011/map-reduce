@@ -5,7 +5,6 @@ use std::{
         atomic::{AtomicUsize, Ordering},
         Arc, Mutex, OnceLock,
     },
-    thread::spawn,
 };
 
 use mio::{net::TcpStream, Events, Interest, Poll, Registry, Token};
@@ -87,5 +86,5 @@ pub fn start() {
     let reactor = Reactor::new(wakers.clone(), registry);
 
     REACTOR.set(reactor).ok();
-    spawn(move || event_loop(poll, wakers));
+    std::thread::spawn(move || event_loop(poll, wakers));
 }

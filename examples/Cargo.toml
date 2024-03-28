@@ -14,6 +14,7 @@ mio = { version = "0.8.8", features = ["net", "os-poll"] }
 runtime = { path = "../runtime" }
 runtime-executor = { path = "../runtime-executor" }
 coroutines-variables = { path = "../coroutines-variables" }
+coroutines-pin = { path = "../coroutines-pin" }
 
 [[example]]
 name = "delayserver"
@@ -62,3 +63,11 @@ path = "runtime_executor.rs"
 [[example]]
 name = "coroutines_variables"
 path = "coroutines_variables.rs"
+
+[[example]]
+name = "pin"
+path = "pin.rs"
+
+[[example]]
+name = "coroutines_pin"
+path = "coroutines_pin.rs"
