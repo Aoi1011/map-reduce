@@ -462,6 +462,7 @@ version = "0.0.0"
 dependencies = [
  "actix-web",
  "coroutine",
+ "coroutines-variables",
  "epoll",
  "mio",
  "runtime",

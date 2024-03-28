@@ -59,9 +59,7 @@ impl Future for HttpGetFuture {
             runtime::reactor::reactor()
                 .register(stream, Interest::READABLE, self.id)
                 .expect("register");
-            runtime::reactor::reactor()
-                .set_waker(waker, self.id)
-                .expect("set waker");
+            runtime::reactor::reactor().set_waker(waker, self.id);
         }
 
         let mut buf = vec![0u8; 147];

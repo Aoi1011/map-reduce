@@ -13,6 +13,7 @@ epoll = { path = "../epoll" }
 mio = { version = "0.8.8", features = ["net", "os-poll"] }
 runtime = { path = "../runtime" }
 runtime-executor = { path = "../runtime-executor" }
+coroutines-variables = { path = "../coroutines-variables" }
 
 [[example]]
 name = "delayserver"
@@ -57,3 +58,7 @@ path = "runtime1.rs"
 [[example]]
 name = "runtime_executor"
 path = "runtime_executor.rs"
+
+[[example]]
+name = "coroutines_variables"
+path = "coroutines_variables.rs"

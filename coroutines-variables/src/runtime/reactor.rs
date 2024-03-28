@@ -46,9 +46,13 @@ impl Reactor {
         self.registry.register(stream, Token(id), interest)
     }
 
-    pub fn set_waker(&self, waker: &Waker, id: usize) -> Option<Waker> {
-        let mut wakers = self.wakers.lock().unwrap();
-        wakers.insert(id, waker.clone())
+    pub fn set_waker(&self, waker: &Waker, id: usize) {
+        let _ = self
+            .wakers
+            .lock()
+            // Must always store the most recent waker
+            .map(|mut w| w.insert(id, waker.clone()).is_none())
+            .unwrap();
     }
 
     pub fn deregister(&self, stream: &mut TcpStream, id: usize) -> io::Result<()> {
