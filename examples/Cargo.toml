@@ -15,6 +15,7 @@ runtime = { path = "../runtime" }
 runtime-executor = { path = "../runtime-executor" }
 coroutines-variables = { path = "../coroutines-variables" }
 coroutines-pin = { path = "../coroutines-pin" }
+rust-futures = { path = "../rust-futures" }
 
 [[example]]
 name = "delayserver"
@@ -71,3 +72,12 @@ path = "pin.rs"
 [[example]]
 name = "coroutines_pin"
 path = "coroutines_pin.rs"
+
+[[example]]
+name = "rust_futures"
+path = "rust_futures.rs"
+
+[dependencies]
+isahc = "1.7.2"
+reqwest = "0.12.2"
+tokio = { version = "1.37.0", features = ["full"] }
