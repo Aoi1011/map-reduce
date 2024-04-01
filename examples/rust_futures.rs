@@ -2,17 +2,24 @@ use isahc::AsyncReadResponseExt;
 use tokio::runtime::Runtime;
 use rust_futures::{init, Http};
 
-fn main() {
-    let mut executor = init();
-    executor.block_on(isahc_main());
+#[tokio::main]
+async fn main() {
+    let executor = init();
+    // executor.block_on(async_main1());
+    // executor.block_on(async_main2());
+    tokio::join!(async_main1(), async_main2());
 }
 
 // Use raw request
-pub async fn async_main() {
+pub async fn async_main1() {
     println!("Program starting");
     let txt = Http::get("/6000/HelloAsyncAwait1-1").await;
     println!("{txt}");
-    let txt = Http::get("/4000/HelloAsyncAwait1-1").await;
+}
+
+pub async fn async_main2() {
+    println!("Program starting");
+    let txt = Http::get("/4000/HelloAsyncAwait1-2").await;
     println!("{txt}");
 }
 
